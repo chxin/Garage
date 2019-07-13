@@ -1,0 +1,177 @@
+"" plugin NERDTree
+" map <C-n> :NERDTreeToggle<CR>
+" 当NERDTree为剩下的唯一窗口时自动关闭
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+" 显示书签
+let NERDTreeShowBookmarks = 1
+" 修改位置
+let NERDTreeWinPos = "right"
+" 修改树的显示图标
+let g:NERDTreeDirArrowExpandable = '►'
+let g:NERDTreeDirArrowCollapsible = '▼'
+let NERDTreeAutoCenter=1
+" 显示行号
+let NERDTreeShowLineNumbers=1
+" 是否显示隐藏文件
+let NERDTreeShowHidden=1
+" 设置宽度
+let NERDTreeWinSize=25
+" 在终端启动vim时，共享NERDTree
+let g:nerdtree_tabs_open_on_console_startup=1
+" 忽略一下文件的显示
+" let NERDTreeIgnore=['\.pyc','\~$','\.swp']
+let g:NERDTreeIndicatorMapCustom = {
+    \ "Modified"  : "✹",
+    \ "Staged"    : "✚",
+    \ "Untracked" : "✭",
+    \ "Renamed"   : "➜",
+    \ "Unmerged"  : "═",
+    \ "Deleted"   : "✖",
+    \ "Dirty"     : "✗",
+    \ "Clean"     : "✔︎",
+    \ 'Ignored'   : '☒',
+    \ "Unknown"   : "?"
+    \ }
+" }}}
+
+"" plugin NERDCommenter
+" # <leader>c<space> 注释/取消注释
+" # <leader>cc // 注释
+" # <leader>cm 只用一组符号注释
+" # <leader>cA 在行尾添加注释
+" # <leader>c$ /* 注释 */
+" # <leader>cs /* 块注释 */
+" # <leader>cy 注释并复制
+" # <leader>ca 切换　// 和 /* */
+" # <leader>cu 取消注释
+""" let g:NERDCustomDelimiters = { 'c': { 'left': '/**','right': '*/' } }
+
+"" plugin Taglist
+" nmap <silent> <F4> : TagbarToggle<CR>
+
+"" plugin Tasklist
+" nmap <leader>td <Plug>TaskList
+
+"" plugin ctrlp
+" set runtimepath^=~/.vim/plugged/ctrlp.vim
+
+"" plugin vim-latex
+" :TTemplate to select template
+" \ll to compile
+filetype plugin on
+set shellslash
+filetype indent on
+let g:tex_flavor='latex'
+
+"" plugin vim-latex-live-preview
+" :LLPStartPreview  to preview
+let g:livepreview_previewer = 'zathura'
+
+"" plugin vim-instant-markdown
+let g:instant_markdown_autostart = 0
+
+"" plugin InstantRST
+" rst slow
+let g:instant_rst_slow = 1
+
+" :InstantMarkdown  to preview
+
+"" plugin vim-gutentags
+let g:gutentags_project_root = ['.root', '.svn', '.git', '.hg', '.project']
+let g:gutentags_ctags_tagfile = '.tags'
+let s:vim_tags = expand('~/.cache/tags')
+let g:gutentags_cache_dir = s:vim_tags
+let g:gutentags_ctags_extra_args = ['--output-format=e-ctags']
+let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
+let g:gutentags_ctags_extra_args += ['--c++-kinds=+px']
+let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
+if !isdirectory(s:vim_tags)
+	silent! call mkdir(s:vim_tags, 'p')
+endif
+
+"" plugin asyncrun
+let g:asyncrun_open = 6
+let g:asyncrun_bell = 1
+" nnoremap <F10> :call asyncrun#quickfix_toggle(6)<cr>
+"
+"" plugin linting ale
+" let g:ale_linters_explicit = 1
+" let g:ale_completion_delay = 500
+" let g:ale_echo_delay = 20
+" let g:ale_lint_delay = 500
+let g:ale_echo_msg_format = '[%linter%] %code: %%s'
+let g:ale_lint_on_text_changed = 'normal'
+let g:ale_lint_on_insert_leave = 1
+let g:airline#extensions#ale#enabled = 1
+let g:ale_c_gcc_options = '-Wall -O2 -std=c99'
+let g:ale_cpp_gcc_options = '-Wall -O2 -std=c++14'
+let g:ale_c_cppcheck_options = ''
+let g:ale_cpp_cppcheck_options = ''
+let g:ale_emit_conflict_warnings = 1
+
+"" plugin signify
+" let g:signify_vcs_cmds_diffmode = {
+"       \ 'git':      'git show HEAD:./%f',
+"       \ 'hg':       'hg cat %f',
+"       \ 'svn':      'svn cat %f',
+"       \ 'bzr':      'bzr cat %f',
+"       \ 'darcs':    'darcs show contents -- %f',
+"       \ 'cvs':      'cvs up -p -- %f 2>%n',
+"       \ 'perforce': 'p4 print %f',
+"       \ }
+
+"" plugin echodoc
+set noshowmode
+let g:echodoc_enable_at_startup=1
+
+"" plugin leaderF
+" CTRL+P 在当前项目目录打开文件搜索，CTRL+N 打开MRU搜索，搜索你最近打开的文件，这两项是我用的最频繁的功能。接着 ALT+P打开函数搜索，ALT+N 打开 Buffer 搜索：
+let g:Lf_ShortcutF = '<c-p>'
+let g:Lf_ShortcutB = '<m-n>'
+noremap <c-n> :LeaderfMru<cr>
+noremap <m-p> :LeaderfFunction!<cr>
+noremap <m-n> :LeaderfBuffer<cr>
+noremap <m-m> :LeaderfTag<cr>
+let g:Lf_StlSeparator = { 'left': '', 'right': '', 'font': '' }
+let g:Lf_RootMarkers = ['.project', '.root', '.svn', '.git']
+let g:Lf_WorkingDirectoryMode = 'Ac'
+let g:Lf_WindowHeight = 0.30
+let g:Lf_CacheDirectory = expand('~/.vim/cache')
+let g:Lf_ShowRelativePath = 0
+let g:Lf_HideHelp = 1
+let g:Lf_StlColorscheme = 'powerline'
+let g:Lf_PreviewResult = {'Function':0}
+let g:Lf_NormalMap = {
+	\ "File":   [["<ESC>", ':exec g:Lf_py "fileExplManager.quit()"<CR>']],
+	\ "Buffer": [["<ESC>", ':exec g:Lf_py "bufExplManager.quit()"<CR>']],
+	\ "Mru":    [["<ESC>", ':exec g:Lf_py "mruExplManager.quit()"<CR>']],
+	\ "Tag":    [["<ESC>", ':exec g:Lf_py "tagExplManager.quit()"<CR>']],
+	\ "Function":    [["<ESC>", ':exec g:Lf_py "functionExplManager.quit()"<CR>']],
+	\ "Colorscheme":    [["<ESC>", ':exec g:Lf_py "colorschemeExplManager.quit()"<CR>']],
+	\ }
+
+"" YouCompleteMe
+let g:ycm_add_preview_to_completeopt = 0
+let g:ycm_show_diagnostics_ui = 0
+let g:ycm_server_log_level = 'info'
+let g:ycm_min_num_identifier_candidate_chars = 1
+let g:ycm_collect_identifiers_from_comments_and_strings = 1
+let g:ycm_complete_in_strings=1
+let g:ycm_key_invoke_completion = '<c-z>'
+set completeopt=menu,menuone
+noremap <c-z> <NOP>
+let g:ycm_semantic_triggers =  {
+           \ 'c,cpp,python,java,go,erlang,perl': ['re!\w{2}'],
+           \ 'cs,lua,javascript': ['re!\w{2}'],
+           \ }
+
+"" Plugin 'vim-airline'
+" let g:airline_theme="molokai"
+let g:airline_powerline_fonts = 1
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+
+"" Plugin 'vim-snipmate'
+let g:snippets_dir='~/.vim/plugged/vim-snippets/snippets'
+imap <m-j> <Plug>snipMateNextOrTrigger 
+smap <m-j> <Plug>snipMateNextOrTrigger 
