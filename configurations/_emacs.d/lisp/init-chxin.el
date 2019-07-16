@@ -27,7 +27,7 @@
 (require-package 'flymake-cursor)
 (require-package 'pdf-tools)
 (require-package 'google-translate)
-;; (require-package 'leetcode)
+(require-package 'leetcode)
 (require-package 'dash)
 (require-package 'request)
 (require-package 'request-deferred)
