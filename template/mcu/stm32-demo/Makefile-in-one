@@ -1,0 +1,176 @@
+# all the files will be generated with this name (main.elf, main.bin, main.hex, etc)
+PROJECT_NAME	= stm32-demo
+
+############################################################
+# toolchain
+############################################################
+BINPATH = /usr/local/Arm/gcc-arm-none-eabi-8-2018-q4-major/bin
+TOOLCHAIN    	= $(BINPATH)/arm-none-eabi-
+CC           	= $(TOOLCHAIN)gcc
+AS           	= $(TOOLCHAIN)gcc -x assembler-with-cpp
+CP           	= $(TOOLCHAIN)objcopy
+AR = $(BINPATH)/$(PREFIX)ar
+HEX          	= $(CP) -O ihex
+BIN          	= $(CP) -O binary -S
+
+############################################################
+# MCU information
+############################################################
+# define mcu, specify the target processor
+MCU          	= cortex-m3
+
+# debug build?
+DEBUG = 1
+
+# link file
+LINK_SCRIPT  	= $(ROOT_DIR)/libraries/script/linker/stm32_flash_512_64_F103ZE.ld
+
+# specify define
+DDEFS       	=
+
+# run from Flash
+DEFS	 		= $(DDEFS) -DRUN_FROM_FLASH=1
+
+# Define optimisation level here
+OPT 			= -Os
+
+############################################################
+# directories in the root dir
+############################################################
+ROOT_DIR     	= .
+USER_DIR     	= $(ROOT_DIR)/hardware
+BUILD_DIR    	= $(ROOT_DIR)/build
+STM32F10x_LIB_DIR      = $(ROOT_DIR)/libraries
+
+############################################################
+# configuration for user src file and include path
+############################################################
+USER_INCLUDE_DIRS 	= .
+USER_SRC 						=
+# configuration for user hardware files
+# include $(USER_DIR)/makefile_hardware.mk
+# user include
+USER_INCLUDE_DIRS  += $(USER_DIR)
+USER_INCLUDE_DIRS  += $(subst :,,$(shell ls -R $(USER_DIR) | grep :))
+
+# user specific src file
+USER_SRC			= $(foreach dir_name, $(USER_INCLUDE_DIRS), $(wildcard *.c $(dir_name)/*.c))
+
+############################################################
+# configuration for STM32 Standard Peripheral Library
+############################################################
+STM32F10X_LIB_SRC     =
+INCLUDE_DIRS 					= 
+ASM_SRC      					=
+# include $(STM32F10x_LIB_DIR)/makefile_std_lib.mk
+# STD Defines
+DDEFS += -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER -DHSE_VALUE=8000000
+
+# source director
+STM32F1_STD_LIB     = $(STM32F10x_LIB_DIR)/STM32F10x_StdPeriph_Driver
+STM32F1_CORE_DIR    = $(STM32F10x_LIB_DIR)/CMSIS/CM3/CoreSupport
+STM32F1_DEVICE_DIR  = $(STM32F10x_LIB_DIR)/CMSIS/CM3/DeviceSupport/ST/STM32F10x
+STM32F1_SRC_DIR     = $(STM32F1_STD_LIB)/src
+STM32F1_INC_DIR     = $(STM32F1_STD_LIB)/inc
+
+# startup
+ASM_SRC  += $(STM32F1_DEVICE_DIR)/startup/gcc_ride7/startup_stm32f10x_hd.s
+
+# CMSIS
+STM32F10X_LIB_SRC  += $(STM32F1_DEVICE_DIR)/system_stm32f10x.c
+STM32F10X_LIB_SRC  += $(STM32F1_CORE_DIR)/core_cm3.c
+
+# use libraries, please add or remove when you use or remove it.
+STM32F10X_LIB_SRC  += $(wildcard *.c $(STM32F1_SRC_DIR)/*.c)
+
+# include directories
+# INCLUDE_DIRS += $(STM32F1_STD_LIB)
+INCLUDE_DIRS += $(STM32F1_CORE_DIR)
+INCLUDE_DIRS += $(STM32F1_DEVICE_DIR)
+INCLUDE_DIRS += $(STM32F1_INC_DIR)
+
+
+############################################################
+# gcc flags
+############################################################
+INC_DIR  	= $(patsubst %, -I%, $(INCLUDE_DIRS) $(USER_INCLUDE_DIRS))
+
+MCU_FLAGS 	= -mcpu=$(MCU)
+
+CP_FLAGS 	= $(MCU_FLAGS) $(OPT) -mthumb -fomit-frame-pointer -Wall -fdata-sections -ffunction-sections -fverbose-asm -Wa,-ahlms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) $(DEFS)
+
+ifeq ($(DEBUG), 1)
+	CP_FLAGS += -g -gdwarf-2
+endif
+
+CP_FLAGS	+= -MMD -MP -MF"$(@:%.0=%.d)" -MT"$(@:%.o=%.d)"
+
+AS_FLAGS 	= $(MCU_FLAGS) -mthumb  -Wa,-ahlms=$(BUILD_DIR)/$(notdir $(<:.s=.lst))
+
+LD_FLAGS 	= $(MCU_FLAGS) -g -gdwarf-2 -mthumb -nostartfiles -Xlinker --gc-sections -T$(LINK_SCRIPT) -Wl,-Map=$(BUILD_DIR)/$(PROJECT_NAME).map,--cref,--no-warn-mismatch
+
+############################################################
+# configuration for objects
+############################################################
+S_OBJECTS 	= $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SRC:.s=.o)))
+C_OBJECTS 	= $(addprefix $(BUILD_DIR)/,$(notdir $(USER_SRC:.c=.o)))
+C_OBJECTS 	+= $(addprefix $(BUILD_DIR)/,$(notdir $(STM32F10X_LIB_SRC:.c=.o)))
+vpath %.s $(sort $(dir $(ASM_SRC)))
+vpath %.c $(sort $(dir $(USER_SRC)))
+vpath %.c $(sort $(dir $(STM32F10X_LIB_SRC)))
+
+# make rules
+# include makefile_rules.mk
+OUTPUT_DIR = $(BUILD_DIR)/output
+all: $(C_OBJECTS) $(S_OBJECTS) $(OUTPUT_DIR)/$(PROJECT_NAME).elf  $(OUTPUT_DIR)/$(PROJECT_NAME).hex $(OUTPUT_DIR)/$(PROJECT_NAME).bin
+	$(TOOLCHAIN)size $(OUTPUT_DIR)/$(PROJECT_NAME).elf
+
+$(BUILD_DIR)/%.o: %.c Makefile | $(OUTPUT_DIR) 
+	$(CC) -c $(CP_FLAGS) $(INC_DIR) $< -o $@
+
+$(BUILD_DIR)/%.o: %.s Makefile | $(OUTPUT_DIR)
+	$(AS) -c $(AS_FLAGS) $< -o $@
+
+$(OUTPUT_DIR)/$(PROJECT_NAME).elf: $(C_OBJECTS) $(S_OBJECTS) Makefile
+	$(CC) $(C_OBJECTS) $(S_OBJECTS) $(LD_FLAGS) -o $@
+
+$(OUTPUT_DIR)/%.hex: $(OUTPUT_DIR)/%.elf | $(OUTPUT_DIR)
+	$(HEX) $< $@
+
+$(OUTPUT_DIR)/%.bin: $(OUTPUT_DIR)/%.elf | $(OUTPUT_DIR)
+	$(BIN) $< $@
+
+$(OUTPUT_DIR):
+	mkdir -p $@
+
+flash: $(OUTPUT_DIR)/$(PROJECT_NAME).bin
+	st-flash write $(OUTPUT_DIR)/$(PROJECT_NAME).bin 0x8000000
+
+erase:
+	st-flash erase
+
+clean:
+	-rm $(C_OBJECTS)
+	-rm $(S_OBJECTS)
+	-rm $(C_OBJECTS:.o=.lst)
+	-rm $(S_OBJECTS:.o=.lst)
+cleanall: clean
+	-rm -rf .dep
+	-rm $(BUILD_DIR)/$(PROJECT_NAME).map
+	-rm $(OUTPUT_DIR)/$(PROJECT_NAME).elf
+	-rm $(OUTPUT_DIR)/$(PROJECT_NAME).hex
+	-rm $(OUTPUT_DIR)/$(PROJECT_NAME).bin
+
+status:
+	@ echo $(USER_SRC)
+	@ echo $(ASM_SRC)
+	@ echo $(STM32F10X_LIB_SRC)
+	@ echo $(USER_INCLUDE_DIRS)
+	@ echo $(INCLUDE_DIRS)
+	@ echo $(C_OBJECTS)
+	@ echo $(S_OBJECTS)
+
+include:
+	@ echo $(INC_DIR) > .clang_complete
+
+# *** EOF ***

@@ -1,0 +1,53 @@
+* stm32 template on Mac OS
+
+This repo is a modified stm32 project based on [[https:https://github.com/freelamb/stm32f10x_makefile_template][stm32-two-makefile-st-link]] and [[https:https://github.com/ertuil/stm32_template][stm32-one-makefile-st-link]], using arm-none-eobi-gcc and st-link tools on MAC OS.
+
+** structure
+
+#+begin_src shell
+tree -d -L 4
+#+end_src
+
+#+RESULTS:
+0
+├──build
+│  └──output
+├──hardware
+│  └──interrupt
+├──libraries
+│  ├──CMSIS
+│  │  └──CM3
+│  │  ├──CoreSupport
+│  │  └──DeviceSupport
+│  ├──STM32F10x_StdPeriph_Driver
+│  │  ├──inc
+│  │  └──src
+│  └──script
+│  └──linker
+├──project
+└──software
+16directories
+
+
+** usage
+
+#+begin_src shell
+git clone ...
+cd stm32-demo && make
+make flash
+make clean
+#+end_src
+
+** toolchain
+
+#+begin_src shell
+brew install st-link
+brew search caskroom/cask/gcc-arm-embedded
+brew install caskroom/cask/gcc-arm-embedded
+#+end_src
+
+** todo
+
+- [ ] use j-link instead of st-link
+- [ ] download hex file using stm32flash or dfu-util
+- [ ] debug using openocd or gdb

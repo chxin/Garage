@@ -1,22 +1,25 @@
 * Emacs
 ** tutorial
 *** navigate
-- C-v: Move forward one screen
-- M-v: Move bakcward one screen
-- C-l: Move the cursor to the center of the screen
-- M-<: Move to the beginning of whole text
-- M->: Move to the end of whole text
+  - C-v: Move forward one screen
+  - M-v: Move bakcward one screen
+  - C-l: Move the cursor to the center of the screen
+  - M-<: Move to the beginning of whole text
+  - M->: Move to the end of whole text
 *** numberic repeat
-- C-u 8 C-f: move forward 8 times
-Note:
-- C-u 8 C-v: move up 8 *lines *
-- C-u 8 M-v: move down 8 *lines *
+  - C-u 8 C-f: move forward 8 times
+  Note:
+  - C-u 8 C-v: move up 8 *lines *
+  - C-u 8 M-v: move down 8 *lines *
 *** text operations
-- C-w: cut
-- M-w: copy
-- C-y: paste
+    - C-w: cut
+    - M-w: copy
+    - C-y: paste
 *** undo
-- C-/: undo command
-Note: two exceptions
-commands that do not change the text
-self-inserting characters less than 20
+  - C-/: undo command
+  Note: two exceptions
+  commands that do not change the text
+  self-inserting characters less than 20
+work
+plan
+issue

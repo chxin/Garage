@@ -1,0 +1,14 @@
+* mac stm32 environment
+** st-link v2
+*** TODO dependencies
+st-link: https://brewformulas.org/Stlink
+#+begin_src shell
+brew install stlink
+#+end_src
+
+add stlink PATH
+#+begin_src :tangle ~/.zshrc.bak
+# st-link
+export PATH=/usr/local/Cellar/stlink/1.5.1/bin:$PATH
+#+end_src
+

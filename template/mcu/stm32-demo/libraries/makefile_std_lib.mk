@@ -1,0 +1,26 @@
+# STD Defines
+DDEFS += -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER -DHSE_VALUE=8000000
+
+# startup
+ASM_SRC  += $(STM32F1_DEVICE_DIR)/startup/gcc_ride7/startup_stm32f10x_hd.s
+
+# source director
+STM32F1_STD_LIB     = $(STM32F10x_LIB_DIR)/STM32F10x_StdPeriph_Driver
+STM32F1_CORE_DIR    = $(STM32F10x_LIB_DIR)/CMSIS/CM3/CoreSupport
+STM32F1_DEVICE_DIR  = $(STM32F10x_LIB_DIR)/CMSIS/CM3/DeviceSupport/ST/STM32F10x
+STM32F1_SRC_DIR     = $(STM32F1_STD_LIB)/src
+STM32F1_INC_DIR     = $(STM32F1_STD_LIB)/inc
+
+# CMSIS
+STM32F10X_LIB_SRC  += $(STM32F1_DEVICE_DIR)/system_stm32f10x.c
+STM32F10X_LIB_SRC  += $(STM32F1_CORE_DIR)/core_cm3.c
+
+# use libraries, please add or remove when you use or remove it.
+STM32F10X_LIB_SRC  += $(wildcard *.c $(STM32F1_SRC_DIR)/*.c)
+
+# include directories
+# INCLUDE_DIRS += $(STM32F1_STD_LIB)
+INCLUDE_DIRS += $(STM32F1_CORE_DIR)
+INCLUDE_DIRS += $(STM32F1_DEVICE_DIR)
+INCLUDE_DIRS += $(STM32F1_INC_DIR)
+

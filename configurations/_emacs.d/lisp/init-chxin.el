@@ -22,18 +22,18 @@
 ;; the packages to install in elpa : auctex, flymake-cursor, use-package
 ;; Note: to install packages not included, uncomment elpa in ~/.emacs.d/lisp/init-elpa.el:106
 ;; Note: the packages to install manually : pdf-tools
-(require-package 'auctex)
-(require-package 'use-package)
-(require-package 'flymake-cursor)
-(require-package 'pdf-tools)
-(require-package 'google-translate)
-(require-package 'leetcode)
-(require-package 'dash)
-(require-package 'request)
-(require-package 'request-deferred)
-(require-package 'graphql)
-(require-package 'spinner)
-;; packages used for cpputils
+;; (require-package 'auctex)
+;; (require-package 'use-package)
+;; (require-package 'flymake-cursor)
+;; (require-package 'pdf-tools)
+;; (require-package 'google-translate)
+;; ;; (require-package 'leetcode)
+;; (require-package 'dash)
+;; (require-package 'request)
+;; (require-package 'request-deferred)
+;; (require-package 'graphql)
+;; (require-package 'spinner)
+;; ;; packages used for cpputils
 ;; (require-package 'auto-complete-clang)
 ;;; ===== emacs configuration
 ;; no ring
@@ -62,16 +62,28 @@
 ;; (load-theme 'sanityinc-solarized-dark t)
 ;; set fontsize
 ;; (set-default-font "-outline-Courier New-normal-normal-normal-mono-18-*-*-*-c-*-iso8859-")
+(set-default-font "-*-Menlo-normal-normal-normal-*-18-*-*-*-m-0-iso10646-1")
+(defun frame-setting ()
+    (set-frame-font "Menlo 18")
+    (set-fontset-font "fontset-default"
+              'unicode '("Menlo" . "unicode-bmp")))
+
+(if (and (fboundp 'daemonp) (daemonp))
+    (add-hook 'after-make-frame-functions
+          (lambda (frame)
+        (with-selected-frame frame
+          (frame-setting))))
+  (frame-setting))
 
 ;; auto split window vertically
-(split-window-horizontally)
-(other-window 1)
-(find-file "~/.emacs.d/org/gtd.org")
-(setq i 0)
-(while (< i 15)
-  (shrink-window-horizontally 1)
-  (incf i))
-(other-window 1)
+; (split-window-horizontally)
+; (other-window 1)
+; (find-file "~/.emacs.d/org/gtd.org"
+; (setq i 0)
+; (while (< i 15)
+;   (shrink-window-horizontally 1)
+;   (incf i))
+; (other-window 1)
 
 ;; resize window
 (global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
