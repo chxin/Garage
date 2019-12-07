@@ -1,0 +1,71 @@
+* tasks
+** DONE 311-group-meeting-Mr.Ge <2019-10-17 Thu 18:35>
+   CLOSED: [2019-10-29 Tue 16:24] SCHEDULED: <2019-10-19 Sat 16:00>
+   - State "DONE"       from "SCHEDULE"   [2019-10-29 Tue 16:24]
+   - State "CANCELLED"  from              [2019-10-19 Sat 16:55] \\
+     conflict with classes. change to saturday
+** DONE Add citation to the latest papers. <2019-10-19 Sat 16:46>
+   CLOSED: [2019-10-29 Tue 16:24] DEADLINE: <2019-10-22 Tue 20:00>
+   - State "DONE"       from "DEADLINE"   [2019-10-29 Tue 16:24]
+** DONE update response letter <2019-10-19 Sat 16:52>
+   CLOSED: [2019-10-29 Tue 16:24]
+   - State "DONE"       from "WAITING"    [2019-10-29 Tue 16:24]
+   - State "WAITING"    from "DEADLINE"   [2019-10-19 Sat 16:53] \\
+     Mr.Ge review the response letter first
+** DONE Test the effects of the same R_cal and R_fb when R_test changes from 10\Omega to 1M\Omega  <2019-10-19 Sat 16:59>
+   CLOSED: [2019-10-29 Tue 16:24]
+   - State "DONE"       from "TODO"       [2019-10-29 Tue 16:24]
+** DONE Reading Plan: C++ Primer <2019-10-29 Tue 11:29>
+   CLOSED: [2019-11-20 Wed 16:31]
+   - State "DONE"       from "TODO"       [2019-11-20 Wed 16:31]
+*** DONE Section 3: Vector, String, Array [3/3]
+    CLOSED: [2019-11-01 Fri 10:03] DEADLINE: <2019-10-31 Thu>
+    - State "DONE"       from "DEADLINE"   [2019-11-01 Fri 10:03]
+   [[file:~/Documents/Cloud/OneDrive/Documents/Books/C++Primer_5th%5BCN%5D.pdf::75][C++ Primer {CN}]] 
+     - [X] String
+     - [X] Vector
+     - [X] Array
+**** why need this data structure
+**** what are their common functions
+*** TODO Section 7: Class [0/0]
+** DONE org mode for project management [3/3] <2019-11-01 Fri 09:15>
+   CLOSED: [2019-11-01 Fri 10:03]
+   - State "DONE"       from "TODO"       [2019-11-01 Fri 10:03]
+   - [X] install <2019-11-01 Fri 09:20>
+   - [X] command <2019-11-01 Fri 09:40>
+     org-projectile-capture-for-current-projectile
+     org-projectile-goto-org
+   - [X] usage <2019-11-01 Fri 10:00>
+** CANCELLED double check ad5933 board and software <2019-11-01 Fri 09:24>
+   CLOSED: [2019-11-20 Wed 16:32]
+   - State "CANCELLED"  from "TODO"       [2019-11-20 Wed 16:32] \\
+     hardware code is unstructed, hard to optimize, including hierarchy, delay, global variables.
+     software code is designed according to the UI and no need for new UI
+     PCB board is a headache for me, more knowledge needed.
+   <2019-11-01 Fri 10:30>
+*** check correctness
+*** optimize PCB board
+*** design software
+** TODO GP-SLD opening report <2019-11-19 Tue 21:29>
+*** read lab GP papers of 2
+*** problem [0/5]
+    - [ ] small droplet problems have been solved. SLD generates ice at the place different from the small droplet. Why we design a specific shape sensor to make them generate ice at different.
+      1. can we just detect ice at the surface of aircraft of some specific position? if the SLD ice is at the small droplet position, is it needed to detect?
+      2. the specific shape sensor can compact to small size to detect the environment.
+    - [ ] design the shape of the sensor
+      1. in accident, the shape of aircraft wings can be used as the sensor because the SLD generates ice in different position as small droplets.
+      2. small droplets ice area: called  protected area
+    - [ ] purpose 
+      1. before ice, detect the severe meteorological environment.
+      2. when is icing, warning
+      3. after ice, escape the environment
+    - [ ] SLD characteristic
+      1. SLD mixed with small droplets
+      2. SLD break into small droplet after crash onto aircraft surface
+      3. SLD speed after the ice position and shape
+    - [ ] research status
+      1. SLD: abroad or home
+      2. ICE: direct or indirect;
+      3. another aspect: wind hole, number calculation, ice detection (3 all abroad)
+    - [ ] terms
+      1. 结冰包线--附录c和附录o

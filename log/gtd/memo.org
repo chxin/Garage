@@ -1,0 +1,20 @@
+* materials
+** Markup for reading 
+*** keywords
+    - text PDF: red underline
+    - image PDF: red underline
+*** importance section
+    - text PDF: green highlight
+    - image PDF: green highlight
+*** uncommon words
+    - text PDF: yellow highlight
+    - image PDF: yellow highlight
+*** comments
+    - text PDF: red highlight
+    - image PDF: red highlight
+*** wrong words
+    - text PDF: red strike
+    - image PDF: red strike
+*** good expression
+    - text PDF: blue highlight
+    - image PDF: blue highlight
