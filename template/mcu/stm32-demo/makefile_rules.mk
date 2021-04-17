@@ -53,3 +53,6 @@ status:
 
 include:
 	@ echo $(INC_DIR) > .clang_complete
+
+gdb:
+	openocd -f /usr/share/openocd/scripts/interface/stlink-v2.cfg  -f /usr/share/openocd/scripts/target/stm32f1x_stlink.cfg -c init -c halt -c "flash write_image erase $(TOP)/LED_project.hex" -c reset -c shutdown

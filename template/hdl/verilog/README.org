@@ -1,0 +1,220 @@
+* Verilog Testbench
+Developing verilog on MacOS!
+** Introduction
+On MacOs, verilog development is always not easy because of the lack of IDE as Quartus.
+Instead, selecting specific tool for specific purpose is proved more feasible and makefile working as scaffold to combine tools together reduces the learning difficulty.
+
+Several tools are selected in this verilog testbench:
+- iverilog: compiler
+- verilator: Syntax checking
+- gtkwave: waveform
+- yosys: synthesis
+- graphviz: RTL viewer
+
+** Tool chains installation
+*** compiler and simulation tools
+install iverilog, verilator, gtkwave:
+
+#+begin_src shell
+brew install icarus-verilog
+brew install verilator
+brew cask install xquartz
+brew cask insatll gtkwave
+cpan install Switch
+#+end_src
+
+if app "Switch" located in '/usr/local/Cellar/perl/...',
+move it to Library folder:
+
+#+begin_src shell
+sudo cp /usr/local/Cellar/perl/5.*/lib/perl5/site_perl/5.*/Switch.pm /Library/Perl/5.*/
+#+end_src
+
+add gtkwave to path:
+#+begin_src shell
+alias gtkwave = /Applications/gtkwave.app/Contents/Resources/bin/gtkwave
+#+end_src
+
+*** synthesis tool
+install yosys:
+
+#+begin_src shell
+brew install yosys
+brew install graphviz
+#+end_src
+
+** Workflow
+*** code demo
+function code in counter.v:
+
+#+begin_src verilog :tangle ./demo/counter.v :mkdirp yes
+module ripple_carry_counter(q, clk, reset);
+   output [3:0] q;
+   input        clk, reset;
+   T_FF tff0(q[0], clk, reset);
+   T_FF tff1(q[1], q[0], reset);
+   T_FF tff2(q[2], q[1], reset);
+   T_FF tff3(q[3], q[2], reset);
+endmodule // ripple_carry_counter
+
+module T_FF(q, clk, reset);
+   output q;
+   input  clk, reset;
+   wire   d;
+
+   D_FF dff0(q, d, clk, reset);
+   not n1(d, q);
+endmodule // T_FF
+
+module D_FF(q, d, clk, reset);
+   output q;
+   input  d, clk, reset;
+   reg    q;
+
+   always @ (posedge reset or negedge clk)
+     if (reset)
+       q <= 1'b0;
+     else
+       q <= d;
+endmodule // D_FF
+#+end_src
+
+testbench code in test-bench.v:
+
+#+begin_src verilog :tangle ./demo/test-bench.v :mkdirp yes
+`timescale 1ns/100ps
+`include "counter.v"
+
+module test_bench;
+   reg clk;
+   reg reset;
+   wire [3:0] q;
+
+   ripple_carry_counter r1(q, clk, reset);
+
+   initial begin
+      $dumpfile("counter.vcd");
+      $dumpvars(0, test_bench);
+   end
+
+   initial
+     clk = 1'b0;
+
+   always
+     #5 clk = ~clk;
+
+   initial begin
+      reset = 1'b1;
+      #15 reset = 1'b0;
+      #180 reset = 1'b1;
+      #10 reset = 1'b0;
+      #20 $finish;
+   end
+
+   initial
+     $monitor($time, " clk, output q = %d", q);
+endmodule // test
+#+end_src
+*** makefile
+my makefile is too ugly:
+
+#+begin_src makefile :tangle ./demo/makefile .mkdirp yes
+compile: test-bench.v counter.v
+	iverilog -o counter.vvp test-bench.v
+
+run: compile
+	vvp ./counter.vvp
+
+vcd: compile
+	vvp -n ./counter.vvp -lxt2
+
+wave: vcd
+	# open -a Scansion counter.vcd
+	open -a gtkview counter.vcd --args "-S signal-wave.tcl"
+
+synthesis: show_rtl.ys counter.v
+  # get net table after synthesis
+  yosys show_rtl.ys
+  # change circuit diagram to image
+  yosys -p "prep; show -stretch -prefix counter -format dot" counter.v
+  # view image
+  dot counter.dot -T png -o counter.png
+
+#+end_src
+*** waveform
+add signal to gtkwave at startup:
+
+#+begin_src tcl
+set tmpdir $::env(PATH)
+puts $tmpdir
+
+# Auto added signals
+set filterKeyword "monitor"
+set filterCondition ","
+set minTime "1ms"
+set maxTime "1s"
+
+set monitorSignals [list]
+set index -1
+set nfacs [ gtkwave::getNumFacs ]
+
+# set auto added signals
+for {set i 0} {$i < $nfacs } {incr i} {
+    set facname [ gtkwave::getFacName $i ]
+    set index [ string first $filterKeyword $facname  ]
+    set index2 [ string first $filterCondition $facname  ]
+
+    if {$index != -1 && $index2 == -1} {
+    	lappend monitorSignals "$facname"
+	}
+}
+
+# Ditch all signals
+gtkwave::/Edit/Highlight_All
+gtkwave::/Edit/Cut
+gtkwave::setFromEntry $minTime
+gtkwave::setToEntry $maxTime
+gtkwave::/Time/Zoom/Zoom_Best_Fit
+
+# Add signals
+# set filter [list led.blue led.green led.red msp430.port_out5\[7:0\] msp430.intr_num\[7:0\] msp430.intr_gie ]
+set filter [test_bench.clk]
+gtkwave::addSignalsFromList $filter
+gtkwave::addSignalsFromList $monitorSignals
+
+# Convert monitor signals
+gtkwave::highlightSignalsFromList $monitorSignals
+gtkwave::/Edit/Data_Format/Decimal
+gtkwave::/Edit/UnHighlight_All
+
+# Start looking after this value
+set startingTime "1ms"
+puts "Starting from marker point 1ms we will measure the amount of micros between each EVEN edge. Please take care that the initial marker must be placed in a 0 position to measure the 1 periods."
+
+
+# Define your sum here
+puts [format "%s %s - %s %s - %s %s" "Total overhead (pin 0+1)" [expr {$time_intrpt + $time_sched}] "Interrupt" $time_intrpt "Scheduler" $time_sched]
+
+#+end_src
+*** synthesis commands
+creat show_rtl.ys with following command:
+
+#+begin_src shell :tangle ./demo/show_rtl.ys :mkdirp yes
+# read design
+read_verilog counter.v
+hierarchy -top counter
+# high-level synthesis
+proc; opt; fsm; opt; memory; opt; #techmap; opt;
+write_verilog synth.v
+#+end_src
+
+convert verilog code to net table:
+
+#+begin_src shell
+# get net table after synthesis
+yosys show_rtl.ys
+# change circuit diagram to image
+yosys -p "prep; show -stretch -prefix counter -format dot" counter.v
+# view image
+dot counter.dot -T png -o counter.png
+#+end_src

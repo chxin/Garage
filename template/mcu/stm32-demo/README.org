@@ -46,6 +46,13 @@ brew search caskroom/cask/gcc-arm-embedded
 brew install caskroom/cask/gcc-arm-embedded
 #+end_src
 
+** contribute
+
+for clang_complete user, run 'make include' to generate configuratation files for clang when auto completing vars.
+
+include:
+	@ echo $(INC_DIR) > .clang_complete
+
 ** todo
 
 - [ ] use j-link instead of st-link

@@ -9,9 +9,17 @@ TOOLCHAIN    	= $(BINPATH)/arm-none-eabi-
 CC           	= $(TOOLCHAIN)gcc
 AS           	= $(TOOLCHAIN)gcc -x assembler-with-cpp
 CP           	= $(TOOLCHAIN)objcopy
-AR = $(BINPATH)/$(PREFIX)ar
+AR 				= $(TOOLCHAIN)ar
 HEX          	= $(CP) -O ihex
 BIN          	= $(CP) -O binary -S
+
+############################################################
+# directories in the root dir
+############################################################
+ROOT_DIR     	= .
+USER_DIR     	= $(ROOT_DIR)/hardware
+BUILD_DIR    	= $(ROOT_DIR)/build
+STM32F10x_LIB_DIR      = $(ROOT_DIR)/libraries
 
 ############################################################
 # MCU information
@@ -35,27 +43,19 @@ DEFS	 		= $(DDEFS) -DRUN_FROM_FLASH=1
 OPT 			= -Os
 
 ############################################################
-# directories in the root dir
-############################################################
-ROOT_DIR     	= .
-USER_DIR     	= $(ROOT_DIR)/hardware
-BUILD_DIR    	= $(ROOT_DIR)/build
-STM32F10x_LIB_DIR      = $(ROOT_DIR)/libraries
-
-############################################################
 # configuration for user src file and include path
 ############################################################
 USER_INCLUDE_DIRS 	= .
-USER_SRC 						=
+USER_SRC 			=
 # configuration for user hardware files
 include $(USER_DIR)/makefile_hardware.mk
 
 ############################################################
 # configuration for STM32 Standard Peripheral Library
 ############################################################
-STM32F10X_LIB_SRC     =
-INCLUDE_DIRS 					= 
-ASM_SRC      					=
+STM32F10X_LIB_SRC   =
+INCLUDE_DIRS 		= 
+ASM_SRC      		=
 include $(STM32F10x_LIB_DIR)/makefile_std_lib.mk
 
 ############################################################
